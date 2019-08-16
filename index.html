@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link rel="stylesheet" href="style.css">
+    
+    <title>Pool Calc</title>
+</head>
+<body>
+    <div class="container offset-lg-3 col-lg-6 py-2">
+        <h1 class="font-weight-normal mb-3">Pool split calculator <small>🎱</small></h1>
+        <div class="card card-body">
+            <form id="peopleForm">
+                <div class="form-row mb-2">
+                    <div class="col-9">
+                        Person's&nbsp;name
+                    </div>
+                    <div class="col">
+                        Time&nbsp;played
+                    </div>
+                </div>
+                <!-- Template for person element -->
+                <div class="form-row mb-2 peopleFormRow">
+                    <div class="col-9">
+                        <input type="text" class="form-control person-name" placeholder="Name">
+                    </div>
+                    <div class="col">
+                        <input type="number" class="form-control person-mins" placeholder="Mins">
+                    </div>
+                </div>
+                <!-- End person -->
+            </form>
+            <div class="mt-2 py-n1 d-block">
+                <button class="btn btn-sm btn-dark" id="addPerson">+ Add person</button>
+                <button class="btn btn-sm btn-outline-danger" id="removePerson">- Remove person</button>
+            </div>
+        </div>
+        <div class="card card-body">
+            <form id="priceForm pt-5">
+                <p>Enter total price</p>
+                <input id="totalCost" class="form-control form-control-lg" type="number" step="0.05" placeholder="20.00">
+            </form>
+        </div>
+        <button class="btn btn-lg btn-primary mt-2" id="submitBtn">Calculate</button>
+        <div class="card card-body bg-light mt-3 d-none">
+            <p id="outputField"></p>
+        </div>
+    </div>
+    
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.js"crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    
+    <script>
+        setTimeout(0);
+        for (let i = 0; i < 3; i++) {
+                document.getElementById('addPerson').click();
+            }
+
+        $('#addPerson').click((e) => {
+            e.preventDefault();
+            $(this).blur();
+            let rows = $('.peopleFormRow');
+            $('#peopleForm').append(rows.first().clone());
+            for (let field of rows.first().find('input')) {
+                field.value = "";
+            };
+        });
+        $('#removePerson').click((e) => {
+            e.preventDefault(); $(this).blur();
+            let rows = $('.peopleFormRow');
+            if (rows.length > 1) {
+                rows.last().remove();
+            }
+        });
+        
+        $('#submitBtn').click(function(e) {
+            e.preventDefault();
+            /* Get all names and prices from form. */
+            formPeople = $('#peopleForm').children('div.peopleFormRow');
+            let people = [];
+            for (let person of formPeople) {
+                let name = person.getElementsByClassName('person-name')[0].value,
+                    time = parseInt(person.getElementsByClassName('person-mins')[0].value);
+                if (time > 0) {
+                    let personObj = {
+                        'name': name,
+                        'time': time
+                    };
+                    people.push(personObj);
+                }
+            }
+            console.log(people);
+
+            /* Get total cost */
+            let cost = $('#totalCost').val();
+            console.log('Total cost: ' + cost);
+
+            /* Calculate average minute price */
+            let totalMins = 0;
+            for (let person of people) {
+                totalMins += person.time;
+            }
+            let minutePrice = cost / totalMins;
+            console.log('Price per minute per person ' + minutePrice);
+
+            let outputField = $('#outputField');
+            outputField.empty();
+            /* Get cost for each person */
+            for (let person of people) {
+                person.cost = minutePrice * person.time;
+                outputField.append(`${person.name}: <b>\$${person.cost.toFixed(2)}</b><br>`)
+            }
+            console.log(people);
+
+            $('#outputField').parent().removeClass('d-none');
+        })
+    </script>
+    
+</body>
+</html>
